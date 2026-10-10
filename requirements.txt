@@ -1,0 +1,37 @@
+# MoodMentor – Milestone 1 Dependencies
+
+# Web framework & server
+fastapi==0.115.6
+uvicorn[standard]==0.32.1
+
+# Frontend
+streamlit==1.41.1
+
+# Database
+sqlalchemy==2.0.36
+pymysql==1.1.1
+cryptography==43.0.3
+
+# Authentication
+passlib[bcrypt]==1.7.4
+python-jose[cryptography]==3.3.0
+bcrypt==4.2.1
+
+# NLP
+nltk==3.9.1
+spacy==3.8.3
+vaderSentiment==3.3.2
+
+# HTTP client (Streamlit -> FastAPI)
+requests==2.32.3
+
+# Environment
+python-dotenv==1.0.1
+
+# Multipart form support for FastAPI
+python-multipart==0.0.20
+
+# Testing
+pytest==8.3.4
+pytest-asyncio==0.24.0
+httpx==0.28.1
