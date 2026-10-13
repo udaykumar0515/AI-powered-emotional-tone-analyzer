@@ -1,8 +1,8 @@
 """
-database.py – SQLAlchemy engine, session factory, and helpers.
+database.py – SQLAlchemy engine and session factory.
 
-Reads credentials from environment variables.  No credentials are hardcoded.
-All route handlers must obtain a session via the get_db() dependency.
+Reads connection credentials from environment variables via python-dotenv.
+All database operations in route handlers must use get_db() as a dependency.
 """
 
 import os
@@ -19,14 +19,14 @@ DB_USER = os.getenv("DB_USER", "root")
 DB_PASSWORD = os.getenv("DB_PASSWORD", "")
 
 DATABASE_URL = (
-    f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}"
-    f"@{DB_HOST}:{DB_PORT}/{DB_NAME}?charset=utf8mb4"
+    f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+    "?charset=utf8mb4"
 )
 
 engine = create_engine(
     DATABASE_URL,
-    pool_pre_ping=True,   # detect and discard stale connections
-    pool_recycle=1800,    # recycle connections every 30 minutes
+    pool_pre_ping=True,   # detect stale connections
+    pool_recycle=1800,    # recycle connections every 30 min
     echo=False,
 )
 
@@ -40,9 +40,8 @@ class Base(DeclarativeBase):
 
 def get_db():
     """
-    FastAPI dependency – yields a database session and closes it on exit.
-
-    Usage in a route:
+    FastAPI dependency that yields a database session and closes it afterwards.
+    Usage:
         db: Session = Depends(get_db)
     """
     db = SessionLocal()
@@ -52,17 +51,18 @@ def get_db():
         db.close()
 
 
-def init_db() -> None:
+def init_db():
     """
-    Create all tables declared in ORM models.
-    Import models before calling so SQLAlchemy registers them with Base.
+    Create all tables defined in ORM models.
+    Import models before calling this so SQLAlchemy is aware of them.
     """
-    from backend.models import db_models  # noqa: F401 – registers ORM models
+    # Import models here to register them with Base before create_all
+    from backend.models import db_models  # noqa: F401
     Base.metadata.create_all(bind=engine)
 
 
 def check_connection() -> bool:
-    """Return True if the database is reachable."""
+    """Return True if the database is reachable, False otherwise."""
     try:
         with engine.connect() as conn:
             conn.execute(text("SELECT 1"))
