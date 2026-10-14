@@ -19,61 +19,90 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# ── Minimal global CSS ────────────────────────────────────────────────────────
+# ── Enhanced styling & theme compatibility ────────────────────────────────────
 st.markdown(
     """
 <style>
-/* Typography and background */
-html, body, [class*="css"] {
-    font-family: 'Inter', 'Segoe UI', sans-serif;
-    background-color: #f9f9f7;
-    color: #2c2c2c;
+/* Fix header clipping bug: give sufficient space below Streamlit's top header bar */
+header[data-testid="stHeader"] {
+    background: transparent !important;
+    z-index: 1 !important;
 }
 
-/* Remove default Streamlit top padding */
-.block-container { padding-top: 2rem; }
+.block-container {
+    padding-top: 5rem !important;
+    padding-bottom: 3rem !important;
+    max-width: 820px !important;
+}
 
-/* Headings */
-h1 { font-size: 1.9rem; font-weight: 700; color: #1a1a1a; margin-bottom: 0.25rem; }
-h2 { font-size: 1.3rem; font-weight: 600; color: #2c2c2c; }
-h3 { font-size: 1.05rem; font-weight: 600; color: #2c2c2c; }
+/* Nav brand */
+.nav-brand {
+    font-size: 1.35rem;
+    font-weight: 700;
+    padding-top: 4px;
+    letter-spacing: -0.02em;
+}
 
-/* Input fields */
+/* Input fields & text visibility (dark theme & autofill support) */
+div[data-baseweb="input"],
+div[data-baseweb="base-input"] {
+    background-color: #1e222d !important;
+    border: 1px solid #3b4252 !important;
+    border-radius: 6px !important;
+}
+
+div[data-baseweb="input"] input,
+div[data-baseweb="base-input"] input,
+.stTextInput input,
+.stTextArea textarea,
 input, textarea {
-    border: 1px solid #d0d0d0 !important;
-    border-radius: 4px !important;
-    background: #ffffff !important;
+    color: #f3f4f6 !important;
+    -webkit-text-fill-color: #f3f4f6 !important;
+    background-color: #1e222d !important;
+    caret-color: #60a5fa !important;
+    font-size: 0.95rem !important;
+}
+
+/* Browser autofill styling so text remains clearly visible */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 40px #1e222d inset !important;
+    -webkit-text-fill-color: #f3f4f6 !important;
+    caret-color: #60a5fa !important;
+}
+
+/* Placeholder styling */
+input::placeholder, textarea::placeholder {
+    color: #9ca3af !important;
+    -webkit-text-fill-color: #9ca3af !important;
+    opacity: 1 !important;
 }
 
 /* Buttons */
 .stButton > button {
-    background-color: #2c2c2c;
-    color: #ffffff;
-    border: none;
-    border-radius: 4px;
-    padding: 0.45rem 1.4rem;
+    border-radius: 6px;
+    padding: 0.45rem 1.25rem;
     font-size: 0.9rem;
     font-weight: 500;
-    cursor: pointer;
-}
-.stButton > button:hover {
-    background-color: #444444;
+    transition: all 0.15s ease-in-out;
 }
 
 /* Dividers */
-hr { border: none; border-top: 1px solid #e0e0e0; margin: 1.5rem 0; }
+hr {
+    border: none;
+    border-top: 1px solid rgba(128, 128, 128, 0.25);
+    margin: 1.25rem 0;
+}
 
-/* Sentiment result table */
+/* Sentiment result box */
 .result-box {
-    background: #ffffff;
-    border: 1px solid #e0e0e0;
-    border-radius: 4px;
+    border: 1px solid rgba(128, 128, 128, 0.25);
+    border-radius: 6px;
     padding: 1rem 1.25rem;
     margin-bottom: 0.75rem;
 }
-
-/* Navigation pills */
-.nav-bar { display: flex; gap: 0.75rem; margin-bottom: 1.5rem; }
 </style>
 """,
     unsafe_allow_html=True,
@@ -95,21 +124,31 @@ def go(page: str) -> None:
 
 # ── Navigation bar ────────────────────────────────────────────────────────────
 def nav_bar() -> None:
-    cols = st.columns([2, 1, 1, 1, 1])
-    cols[0].markdown("**MoodMentor**")
     if st.session_state.token:
-        if cols[2].button("Analysis", key="nav_analysis"):
+        cols = st.columns([3, 1, 1, 1])
+        with cols[0]:
+            st.markdown(
+                "<div class='nav-brand'>MoodMentor</div>",
+                unsafe_allow_html=True,
+            )
+        if cols[1].button("Analysis", key="nav_analysis", use_container_width=True):
             go("analysis")
-        if cols[3].button("Profile", key="nav_profile"):
+        if cols[2].button("Profile", key="nav_profile", use_container_width=True):
             go("profile")
-        if cols[4].button("Logout", key="nav_logout"):
+        if cols[3].button("Logout", key="nav_logout", use_container_width=True):
             st.session_state.token = None
             st.session_state.user = None
             go("home")
     else:
-        if cols[3].button("Login", key="nav_login"):
+        cols = st.columns([4, 1, 1])
+        with cols[0]:
+            st.markdown(
+                "<div class='nav-brand'>MoodMentor</div>",
+                unsafe_allow_html=True,
+            )
+        if cols[1].button("Login", key="nav_login", use_container_width=True):
             go("login")
-        if cols[4].button("Register", key="nav_register"):
+        if cols[2].button("Register", key="nav_register", use_container_width=True):
             go("register")
     st.markdown("---")
 
