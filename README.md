@@ -1,234 +1,104 @@
 # MoodMentor – AI-Powered Emotional Tone Analyzer
 
-**Milestone 1** of the Infosys Springboard internship project.
+**MoodMentor** is a full-stack AI web application that analyses the emotional tone of text using natural language processing and VADER sentiment analysis. Users can type text directly or upload `.txt` and `.csv` files to receive instant, structured sentiment reports.
 
-MoodMentor analyses the emotional tone of text using VADER sentiment analysis and returns structured reports. Users can type text directly or upload `.txt` and `.csv` files.
-
----
-
-## Features (Milestone 1)
-
-- User registration and login (bcrypt + JWT)
-- Authenticated profile management
-- Text input with VADER sentiment analysis
-- `.txt` and `.csv` file upload and analysis
-- NLP preprocessing pipeline (spaCy tokenisation, lemmatisation, stop-word removal, negation preservation)
-- Sentiment labels: Positive, Negative, Neutral (VADER standard thresholds)
-- VADER compound, positive, negative, and neutral scores
-- MySQL database via SQLAlchemy ORM
-- FastAPI backend with organised routes
-- Streamlit frontend communicating with FastAPI over HTTP
+Developed as part of the **Infosys Springboard Internship**.
 
 ---
 
-## Technology Stack
+## 📸 Screenshots
 
-| Layer        | Technology                          |
-|--------------|-------------------------------------|
-| Frontend     | Streamlit                           |
-| Backend      | FastAPI + Uvicorn                   |
-| Database     | MySQL + SQLAlchemy                  |
-| Auth         | bcrypt (passlib) + JWT (python-jose)|
-| NLP          | NLTK, spaCy, VADER                  |
-| HTTP client  | requests                            |
+| Landing Page | Sentiment Analysis Dashboard |
+| :---: | :---: |
+| ![Landing Page](screenshots/login.png) | ![Dashboard](screenshots/dashboard.png) |
 
----
-
-## Project Structure
-
-```
-moodmentor/
-├── backend/
-│   ├── main.py               # FastAPI app entry point
-│   ├── database.py           # Engine, session, init helpers
-│   ├── models/
-│   │   ├── db_models.py      # SQLAlchemy ORM models (User)
-│   │   └── schemas.py        # Pydantic request/response schemas
-│   ├── routes/
-│   │   ├── auth.py           # /auth/register, /auth/login, /auth/me
-│   │   ├── profile.py        # /profile/ (GET, PUT)
-│   │   └── sentiment.py      # /sentiment/analyze, /sentiment/analyze-file
-│   └── services/
-│       ├── auth.py           # bcrypt + JWT utilities
-│       └── nlp.py            # Preprocessing pipeline + VADER
-├── frontend/
-│   ├── app.py                # Streamlit entry point + navigation
-│   ├── api_client.py         # HTTP wrapper around FastAPI
-│   ├── page_home.py          # Landing page
-│   ├── page_login.py         # Login form
-│   ├── page_register.py      # Registration form
-│   ├── page_analysis.py      # Text input and file upload
-│   └── page_profile.py       # Profile view/update
-├── tests/
-│   ├── conftest.py           # Fixtures (SQLite in-memory, TestClient)
-│   ├── test_auth.py          # Registration, login, /me, access isolation
-│   ├── test_profile.py       # Profile endpoints
-│   ├── test_nlp.py           # NLP unit tests
-│   └── test_sentiment_api.py # Sentiment endpoint integration tests
-├── init_db.py                # One-shot table creation script
-├── .env.example              # Environment variable template
-├── requirements.txt
-└── README.md
-```
+<p align="center">
+  <b>Analysis Results & Score Breakdown</b><br>
+  <img src="screenshots/results.png" alt="Results" width="750"/>
+</p>
 
 ---
 
-## Setup (Windows / VS Code)
+## ⚡ Features
 
-### 1. Create the MySQL database
+- **Authentication:** User registration & login with **bcrypt** password hashing and **JWT** session tokens.
+- **NLP Preprocessing:** Text cleaning with **spaCy** & **NLTK** (tokenisation, lemmatisation, stop-word filtering, negation preservation).
+- **VADER Sentiment Analysis:** Categorises text into **Positive**, **Negative**, or **Neutral** with fine-grained compound and component scores.
+- **File Upload Support:** Upload and process plain text (`.txt`) and tabular (`.csv`) datasets in bulk.
+- **Full-Stack Architecture:** Decoupled **FastAPI** backend with **MySQL (SQLAlchemy)** and an interactive **Streamlit** frontend.
 
-```sql
-CREATE DATABASE moodmentor CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-```
+---
 
-### 2. Create and activate a virtual environment
+## 🛠️ Tech Stack
 
+- **Frontend:** Streamlit
+- **Backend:** FastAPI, Uvicorn
+- **Database:** MySQL, SQLAlchemy ORM
+- **NLP / ML:** spaCy (`en_core_web_sm`), NLTK, VADER (`vaderSentiment`)
+- **Security:** Passlib (bcrypt), python-jose (JWT)
+
+---
+
+## 🚀 Quickstart
+
+### 1. Configure Environment
+Create `.env` from template:
 ```powershell
-python -m venv venv
-.\venv\Scripts\Activate.ps1
+Copy-Item .env.example .env
 ```
+Fill in your MySQL credentials and JWT secret in `.env`.
 
-### 3. Install dependencies
-
-```powershell
-pip install -r requirements.txt
-```
-
-### 4. Download the spaCy language model
-
-```powershell
-python -m spacy download en_core_web_sm
-```
-
-### 5. Configure environment variables
-
-```powershell
-copy .env.example .env
-```
-
-Open `.env` and fill in your values:
-
-```env
-DB_HOST=localhost
-DB_PORT=3306
-DB_NAME=moodmentor
-DB_USER=your_mysql_username
-DB_PASSWORD=your_mysql_password
-SECRET_KEY=replace_with_a_long_random_secret_key
-ALGORITHM=HS256
-ACCESS_TOKEN_EXPIRE_MINUTES=60
-BACKEND_URL=http://127.0.0.1:8000
-```
-
-Generate a secure `SECRET_KEY`:
-
-```powershell
-python -c "import secrets; print(secrets.token_hex(32))"
-```
-
-### 6. Initialise database tables
-
+### 2. Initialize Database
 ```powershell
 python init_db.py
 ```
 
-Expected output: `Database tables created successfully.`
-
-### 7. Start the FastAPI backend
-
+### 3. Start Backend API
 ```powershell
-uvicorn backend.main:app --reload --port 8000
+python -m uvicorn backend.main:app --reload --port 8000
 ```
+*API Docs: http://127.0.0.1:8000/docs*
 
-API documentation is available at: http://127.0.0.1:8000/docs
-
-### 8. Start the Streamlit frontend (separate terminal)
-
+### 4. Start Frontend UI
+In a second terminal:
 ```powershell
-streamlit run frontend/app.py
+python -m streamlit run frontend/app.py --server.port 8501
 ```
-
-Opens at: http://localhost:8501
+*App: http://localhost:8501*
 
 ---
 
-## Running Tests
+## 🔌 API Endpoints
 
-Tests use an in-memory SQLite database and do not require MySQL.
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| `GET` | `/health` | No | Service health check |
+| `POST` | `/auth/register` | No | Register new user account |
+| `POST` | `/auth/login` | No | Authenticate & receive JWT token |
+| `GET` | `/auth/me` | Yes | Get authenticated user info |
+| `GET` | `/profile/` | Yes | View user profile |
+| `PUT` | `/profile/` | Yes | Update user display name |
+| `POST` | `/sentiment/analyze` | Yes | Analyze raw text string |
+| `POST` | `/sentiment/analyze-file` | Yes | Bulk analyze `.txt` or `.csv` files |
 
-```powershell
-pytest tests/ -v
+---
+
+## 📂 Project Structure
+
 ```
-
----
-
-## NLP Preprocessing Pipeline
-
-Each input goes through two representations:
-
-| Representation  | Purpose          | Steps                                                                      |
-|-----------------|------------------|----------------------------------------------------------------------------|
-| `processed_text`| Display          | Unicode NFC → whitespace collapse → lowercase → spaCy tokenise → lemmatise → remove stop-words (negations preserved) |
-| `vader_input`   | VADER scoring    | Unicode NFC → whitespace collapse only (preserves casing, punctuation, negations) |
-
-**Why two representations?**
-VADER is trained on social media text and relies on capitalisation, punctuation, and negation words ("not", "never"). Feeding it the heavily processed version would reduce scoring accuracy.
-
-**Negation preservation:**
-Words such as `not`, `never`, `no`, `nor`, `neither`, `hardly`, `scarcely`, and `barely` are explicitly excluded from stop-word removal.
-
-### VADER Thresholds (standard)
-
-| Compound score  | Label    |
-|-----------------|----------|
-| ≥ 0.05          | Positive |
-| ≤ −0.05         | Negative |
-| Between         | Neutral  |
-
----
-
-## API Endpoints
-
-| Method | Path                        | Auth | Description                        |
-|--------|-----------------------------|------|------------------------------------|
-| GET    | /health                     | No   | Health check                       |
-| POST   | /auth/register              | No   | Register a new user                |
-| POST   | /auth/login                 | No   | Login and obtain JWT               |
-| GET    | /auth/me                    | Yes  | Get current user info              |
-| GET    | /profile/                   | Yes  | Get profile                        |
-| PUT    | /profile/                   | Yes  | Update name                        |
-| POST   | /sentiment/analyze          | Yes  | Analyse a text string              |
-| POST   | /sentiment/analyze-file     | Yes  | Analyse a .txt or .csv file        |
-
----
-
-## Troubleshooting
-
-| Problem | Solution |
-|---------|----------|
-| `Database tables created successfully.` not shown | Check `.env` credentials. Verify MySQL is running. |
-| `Could not reach the backend` in Streamlit | Ensure `uvicorn` is running on port 8000. |
-| `No matching distribution found for spacy` | Run `pip install spacy==3.8.16` |
-| `OSError: [E050]` spaCy model not found | Run `python -m spacy download en_core_web_sm` |
-| JWT 401 errors | Check `SECRET_KEY` is set in `.env` and not empty. |
-| NLTK resource errors | They are downloaded automatically on first run. If offline, run `python -c "import nltk; nltk.download('stopwords'); nltk.download('punkt')"` |
-
----
-
-## Security Notes
-
-- Passwords are hashed with bcrypt. Plain-text passwords are never stored or logged.
-- JWTs contain only the user's email as the subject. The user ID is never trusted from the frontend.
-- Credentials and secrets are read from environment variables. The `.env` file is excluded from version control by `.gitignore`.
-- API responses never expose `password_hash` or internal tokens.
-
----
-
-## Out of Scope (Future Milestones)
-
-- BERT / DistilBERT emotion classification
-- Multi-label emotion detection
-- Personalised wellness recommendations
-- Historical mood tracking and analytics
-- Chatbot integration
-- Production deployment
+moodmentor/
+├── backend/
+│   ├── main.py              # FastAPI application entry point
+│   ├── database.py          # SQLAlchemy engine & session factory
+│   ├── models/              # ORM models & Pydantic schemas
+│   ├── routes/              # Auth, profile, and sentiment endpoints
+│   └── services/            # Hashing, JWT auth & NLP/VADER logic
+├── frontend/
+│   ├── app.py               # Streamlit entry point & navigation
+│   ├── api_client.py        # HTTP client communicating with backend
+│   └── page_*.py            # UI pages (home, auth, analysis, profile)
+├── screenshots/             # Application screenshots
+├── init_db.py               # Database initialization script
+├── requirements.txt         # Project dependencies
+└── README.md                # Quick lookup guide
+```

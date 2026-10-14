@@ -34,8 +34,3 @@ python-multipart==0.0.20
 # Validation & Encoding
 email-validator>=2.0.0
 chardet>=5.0.0
-
-# Testing
-pytest==8.3.4
-pytest-asyncio==0.24.0
-httpx==0.28.1
